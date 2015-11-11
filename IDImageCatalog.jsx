@@ -309,7 +309,8 @@ CatalogCreator.prototype.getImageFiles = function(folder) {
 };
 
 CatalogCreator.prototype.isImageFile = function(file) {
-    return file.name.match(/\.(eps|ai|pdf|psd|jpg|tif|png)$/i);
+    return(file.name.match(/\.(eps|ai|pdf|psd|jpg|tif|png)$/i)
+	   && file.name.charAt(0) != ".");
 };
 
 var optDialog = new OptionDialog();
