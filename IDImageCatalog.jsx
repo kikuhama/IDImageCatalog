@@ -317,5 +317,6 @@ var optDialog = new OptionDialog();
 optDialog.show(function() {
     var creator = new CatalogCreator();
     creator.run(optDialog.option);
+    alert("完了しました。");
 });
 
