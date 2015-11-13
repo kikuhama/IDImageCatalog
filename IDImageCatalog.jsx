@@ -1,7 +1,12 @@
 /*
   InDesignを使って，画像ファイルのカタログを作成する。
-  Version 1.0.0
+  Version 1.0.1
   ©Copyright Hamajima Shoten, Publishers & Kikuchi Ken 2015
+
+  Changes:
+  Ver. 1.0.1
+  - 用紙サイズとして，B4，A3を追加
+  - 用紙方向を選択できるように変更
 */
 
 #target indesign
@@ -46,11 +51,12 @@ var OptionDialog = function() {
     var STATIC_HEIGHT = 15;
     var BUTTON_HEIGHT = 20;
     var LINE_HEIGHT = 25;
-    var y;
+    var x, y;
     var window = new Window("dialog", "読み込み設定");
     var option = {
 	targetFolder: null,
 	pageSize: "A4",
+	pageOrientation: PageOrientation.PORTRAIT,
 	pageMargin: 15
     };
 
@@ -69,6 +75,21 @@ var OptionDialog = function() {
 	}
 	else if(this == window.paperGroup.b5Radio) {
 	    option.pageSize = "B5";
+	}
+	else if(this == window.paperGroup.b4Radio) {
+	    option.pageSize = "B4";
+	}
+	else if(this == window.paperGroup.a3Radio) {
+	    option.pageSize = "A3";
+	}
+    };
+
+    var onSelectOrientation = function() {
+	if(this == window.paperGroup.orientationGroup.portraitRadio) {
+	    option.pageOrientation = PageOrientation.PORTRAIT;
+	}
+	else if(this == window.paperGroup.orientationGroup.landscapeRadio) {
+	    option.pageOrientation = PageOrientation.LANDSCAPE;
 	}
     };
     
@@ -135,20 +156,52 @@ var OptionDialog = function() {
     window.targetGroup.selectFolderButton.onClick = selectFolder;
 
     window.paperGroup = window.add("panel",
-				    [10, 100, 400, 170],
+				    [10, 100, 400, 230],
 				    "用紙");
     y = 10;
+    x = 15;
     window.paperGroup.a4Radio
 	= window.paperGroup.add("radiobutton",
-				 [15, y, 155, y + RADIO_HEIGHT],
+				 [x, y, x+80, y + RADIO_HEIGHT],
 				 "A4");
     window.paperGroup.a4Radio.value = true;
     window.paperGroup.a4Radio.onClick = onSelectPaperSize;
+    x += 90;
     window.paperGroup.b5Radio
 	= window.paperGroup.add("radiobutton",
-				 [160, y, 300, y + RADIO_HEIGHT],
+				 [x, y, x+80, y + RADIO_HEIGHT],
 				 "B5");
     window.paperGroup.b5Radio.onClick = onSelectPaperSize;
+    x += 90;
+    window.paperGroup.b4Radio
+	= window.paperGroup.add("radiobutton",
+				 [x, y, x+80, y + RADIO_HEIGHT],
+				 "B4");
+    window.paperGroup.b4Radio.onClick = onSelectPaperSize;
+    x += 90;
+    window.paperGroup.a3Radio
+	= window.paperGroup.add("radiobutton",
+				 [x, y, x+80, y + RADIO_HEIGHT],
+				 "A3");
+    window.paperGroup.a3Radio.onClick = onSelectPaperSize;
+    x = 0;
+    y += RADIO_HEIGHT;
+    window.paperGroup.orientationGroup
+	= window.paperGroup.add("group",
+				[x, y, x + 200, y + RADIO_HEIGHT]);
+    x = 15;
+    window.paperGroup.orientationGroup.portraitRadio
+	= window.paperGroup.orientationGroup.add("radiobutton",
+						 [x, 0, x + 80, RADIO_HEIGHT],
+						 "縦");
+    window.paperGroup.orientationGroup.portraitRadio.value = true;
+    window.paperGroup.orientationGroup.portraitRadio.onClick = onSelectOrientation;
+    x += 90;
+    window.paperGroup.orientationGroup.landscapeRadio
+	= window.paperGroup.orientationGroup.add("radiobutton",
+						 [x, 0, x + 80, RADIO_HEIGHT],
+						 "横");
+    window.paperGroup.orientationGroup.landscapeRadio.onClick = onSelectOrientation;
     y += RADIO_HEIGHT;
     window.paperGroup.add("statictext",
 			  [15, y + STATIC_OFFSET,
@@ -286,6 +339,7 @@ CatalogCreator.prototype.findImageRect = function(imageFile) {
 CatalogCreator.prototype.createDoc = function(option) {
     var docPreset = app.documentPresets[0];
     docPreset.pageSize = option.pageSize;
+    docPreset.pageOrientation = option.pageOrientation;
     docPreset.facingPages = false;
     docPreset.top = docPreset.left = docPreset.bottom = docPreset.right = option.pageMargin;
     var doc = app.documents.add(true, docPreset);
